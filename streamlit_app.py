@@ -1,2 +1,7 @@
 import streamlit as st
-st.write("# Prediksi Harga Bitcoin Menggunakan LSTM")
+st.title("Aplikasi Data Mining")
+
+side_bar = st.sidebar.selectbox(
+  'Pilih Dataset',
+  ('Bungan IRIS', 'Kanker Payudara', 'Digit Angka')
+)
