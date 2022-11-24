@@ -7,8 +7,6 @@ from streamlit_extras.app_logo import add_logo
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
-from bokeh.plotting import figure
-import altair as alt
 
 add_logo("http://placekitten.com/150/150")
 st.markdown("# Pengolahan Data")
