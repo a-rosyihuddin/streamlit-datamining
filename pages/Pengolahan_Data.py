@@ -36,30 +36,32 @@ if(selected == "Dataset"):
 
   with keterangan:
     st.text("""
-             Output Dari Dataset ini merupakan categori : 0,1,2,3
              Column:
-             * Battery power: Berapa Banyak Power Dari Baterai
-             * Blue: Apakah Batrey nya memiliki Bluetooth atau TIDAK
-             * Dual_Sim: Apakah Mendukung Dual SIM atau TIDAK
-             * fc: Ukuran Pixel Dari Kamera Depan
-             * four_g: Apakah Sudah support jaringan 4G atau TIDAK
-             * int_memory: Internal Memory berapa GB
-             * mobile_wt: Weight of mobile phone
-             * pc: Ukuran Pixel Dari Kamera Depan/Primary
-             * px_height: Pixel Resolution Height
-             * px_width: Pixel Resolution Width
-             * ram: Ukuran RAM
-             * sc_h: Screen Height of mobile in cm
-             * sc_w: Screen Width of mobile in cm
-             * three_g: Apakah Jaringan nya support 3G
-             * touch_screen: Layarnya Bisa di sentuh Atau tidak
-             * wifi: Memiliki Jaringan WIFI atau Tidak
-             * Price range: label dari kisaran harga
+             - Battery power: Berapa Banyak Power Dari Baterai
+             - Blue: Apakah Batrey nya memiliki Bluetooth atau TIDAK
+             - Dual_Sim: Apakah Mendukung Dual SIM atau TIDAK
+             - fc: Ukuran Pixel Dari Kamera Depan
+             - four_g: Apakah Sudah support jaringan 4G atau TIDAK
+             - int_memory: Internal Memory berapa GB
+             - mobile_wt: Berat Handphone
+             - pc: Ukuran Pixel Dari Kamera Belakang/Primary
+             - px_height: Pixel Resolution Height
+             - px_width: Pixel Resolution Width
+             - ram: Ukuran RAM
+             - sc_h: Screen Height of mobile in cm
+             - sc_w: Screen Width of mobile in cm
+             - three_g: Apakah Jaringan nya support 3G
+             - touch_screen: Layarnya Bisa di sentuh Atau tidak
+             - wifi: Memiliki Jaringan WIFI atau Tidak
+             - Price range: label dari kisaran harga
+             
              Index
-             * 0 - Low Cost
-             * 1 - Medium Cost
-             * 2 - High Cost
-             * 3 - Very High Cost
+             Output Dari Dataset ini merupakan sebuah index yaitu : 0,1,2,3, 
+             dimana dari 4 index ini di kategorikan sebagai berikut
+             > 0 - Low Cost
+             > 1 - Medium Cost
+             > 2 - High Cost
+             > 3 - Very High Cost
            """)
 
 elif(selected == 'Preprocessing'):
@@ -72,12 +74,11 @@ elif(selected == 'Preprocessing'):
 
 elif(selected == 'Modeling'):
   # Preprocessing Min-Max Scaler
-  st.write('Modeling dengan menggunakan Dataset yang telah dilakukan preprocessing Min-Max Scaler')
   scaled = MinMaxScaler()
   df_train_pre = scaled.fit_transform(df_train.drop(columns=["price_range"]))
-  
   x_train, x_test, y_train, y_test = train_test_split(df_train_pre, y, test_size = 0.2, random_state = 0)
   loading()
+  st.write('Modeling dengan menggunakan Dataset yang telah dilakukan preprocessing Min-Max Scaler')
   knn, dcc, nb = st.tabs(['K-Nerest Neighbor', 'Decission Tree', 'Naive Bayes'])
   with knn:
     scores = {}
@@ -90,7 +91,7 @@ elif(selected == 'Modeling'):
         
     best_k = max(scores, key=scores.get)
     st.caption("Splitting Data yang digunakan merupakan 80:20, 20\% untuk data test dan 80\% untuk data train\nIterasi K di lakukan sebanyak 20 Kali")
-    st.success(f"K Terbaik : {best_k}, Akurasi Yang di Hasilkan : {max(scores.values())* 100}%")
+    st.success(f"K Terbaik : {best_k} berada di Index : {best_k-1}, Akurasi Yang di Hasilkan : {max(scores.values())* 100}%")
     st.write(df_train_pre)
     
     # Create Chart 
@@ -118,7 +119,7 @@ elif(selected == 'Modeling'):
           scores_np[i] = accuracy_score(y_test_np, y_pred_np)
 
       best_k_np = max(scores_np, key=scores_np.get)
-      st.success(f"K Terbaik : {best_k_np}, Akurasi Yang di Hasilkan : {max(scores_np.values())* 100}%")
+      st.success(f"K Terbaik : {best_k_np} berada di Index : {best_k_np-1}, Akurasi Yang di Hasilkan : {max(scores_np.values())* 100}%")
       st.write(df_train)
 
       # Create Chart 
@@ -136,5 +137,22 @@ elif(selected == 'Modeling'):
 
 elif(selected== 'Implementation'):
   loading()
-  number = st.number_input('Insert a number')
-  st.write('The current number is ', number)
+  col1, col2 = st.columns(2)
+  with col1:
+    battery = st.number_input('Battery Power')
+    bluetooth = st.number_input('Bluetoth')
+    sim_card = st.number_input('Dual SIM')
+    kamera_depan = st.number_input('Ukuran Kamera Depan(Mega Pikesel)')
+    jaringan_4G = st.number_input('Jaringan 4G')
+    int_memori= st.number_input('Internal Memori')
+    berat_hp= st.number_input('Berat Handphone')
+    kamera_belakang= st.number_input('Kemera Belakang (Mega Piksel)')
+  with col2:
+    tinggi_hp= st.number_input('Tinggi Handphone')
+    lebar_hp= st.number_input('Lebar Handphone')
+    ram= st.number_input('Ukuran RAM')
+    tinngi_layar= st.number_input('Tinggi Layar')
+    lebar_layar= st.number_input('Lebar Layar')
+    jaringan_3G= st.number_input('Jaringan 3G')
+    touchscreen= st.number_input('Touchscreen')
+    wifi= st.number_input('WIFI')
