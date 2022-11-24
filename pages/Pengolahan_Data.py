@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import joblib
+import os
+import time
 from sklearn.preprocessing import MinMaxScaler
 from streamlit_option_menu import option_menu
 from streamlit_extras.app_logo import add_logo
@@ -8,11 +11,15 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 
+def loading():
+  with st.spinner('Tunggu Sebentar...'):
+    time.sleep(1.5)
+
 add_logo("http://placekitten.com/150/150")
 st.markdown("# Pengolahan Data")
 selected = option_menu(
     menu_title  = "Data Mining ",
-    options     = ["Dataset","Preprocessing","Modeling","Implementation","Testing"],
+    options     = ["Dataset","Preprocessing","Modeling","Implementation"],
     icons       = ["data","Process","model","implemen","Test"],
     orientation = "horizontal",
 )
@@ -21,6 +28,7 @@ df_train = pd.read_csv("data/train.csv")
 y = df_train['price_range']
 
 if(selected == "Dataset"):
+  loading()
   st.success(f"Jumlah Data : {df_train.shape[0]} Data, dan Jumlah Fitur : {df_train.shape[1]} Fitur")
   dataframe, keterangan = st.tabs(['Datset', 'Keterangan'])
   with dataframe:
@@ -55,30 +63,78 @@ if(selected == "Dataset"):
            """)
 
 elif(selected == 'Preprocessing'):
+  loading()
   st.write('Data dilakukan Preprocessing menggunakan Min-Max Scaler')
   scaled = MinMaxScaler()
-  df_train = scaled.fit_transform(df_train.drop(columns=["price_range"]))
+  df_train_pre = scaled.fit_transform(df_train.drop(columns=["price_range"]))
   st.dataframe(df_train)
   
 
 elif(selected == 'Modeling'):
-  x_train, x_test, y_train, y_test = train_test_split(df_train, y, test_size = 0.2, random_state = 0)
+  # Preprocessing Min-Max Scaler
+  st.write('Modeling dengan menggunakan Dataset yang telah dilakukan preprocessing Min-Max Scaler')
+  scaled = MinMaxScaler()
+  df_train_pre = scaled.fit_transform(df_train.drop(columns=["price_range"]))
+  
+  x_train, x_test, y_train, y_test = train_test_split(df_train_pre, y, test_size = 0.2, random_state = 0)
+  loading()
   knn, dcc, nb = st.tabs(['K-Nerest Neighbor', 'Decission Tree', 'Naive Bayes'])
   with knn:
     scores = {}
-    scores_list = []
 
     for i in range(1, 20+1):
         KN = KNeighborsClassifier(n_neighbors = i)
         KN.fit(x_train, y_train)
         y_pred = KN.predict(x_test)
         scores[i] = accuracy_score(y_test, y_pred)
-        scores_list.append(accuracy_score(y_test, y_pred))
-    # best_k = 
-    st.success(f"K Terbaik : {max(scores, key=scores.get)}, Akurasi Yang di Hasilkan : {max(scores.values())* 100}%")
-    st.caption("Splitting Data yaitu 80:20, 20\% untuk data test dan 80\% untuk data train\nIterasi K di lakukan sebanyak 20 Kali")
+        
+    best_k = max(scores, key=scores.get)
+    st.caption("Splitting Data yang digunakan merupakan 80:20, 20\% untuk data test dan 80\% untuk data train\nIterasi K di lakukan sebanyak 20 Kali")
+    st.success(f"K Terbaik : {best_k}, Akurasi Yang di Hasilkan : {max(scores.values())* 100}%")
+    st.write(df_train_pre)
     
     # Create Chart 
+    st.write('Dari proses pemodelan yang telah di lakukan menghasilkan grafik sebagai berikut')
     accuration_k = np.array(list(scores.values()))
     chart_data = pd.DataFrame(accuration_k, columns=['Score Akurasi'])
     st.line_chart(chart_data)
+    
+    # Save Model
+    model = KNeighborsClassifier(n_neighbors=best_k)
+    model.fit(x_train, y_train)
+    dirname = os.path.dirname(__file__)   # Mndapatkan Path directori
+    joblib.dump(model, f'{dirname}/../model/knn_model_pre.sav') # Menyimpan Model ke dalam folder model
+    
+    # Tanpa Preprocessing Min-Max Scaler
+    st.write('Modeling Data dengan menggunakan Dataset yang tidak dilakukan preprocessing Min-Max Scaler')
+    x_train_np, x_test_np, y_train_np, y_test_np = train_test_split(df_train, y, test_size = 0.2, random_state = 0)
+    with knn:
+      scores_np = {}
+
+      for i in range(1, 20+1):
+          KN = KNeighborsClassifier(n_neighbors = i)
+          KN.fit(x_train_np, y_train_np)
+          y_pred_np = KN.predict(x_test_np)
+          scores_np[i] = accuracy_score(y_test_np, y_pred_np)
+
+      best_k_np = max(scores_np, key=scores_np.get)
+      st.success(f"K Terbaik : {best_k_np}, Akurasi Yang di Hasilkan : {max(scores_np.values())* 100}%")
+      st.write(df_train)
+
+      # Create Chart 
+      st.write('Dari proses pemodelan yang telah di lakukan menghasilkan grafik sebagai berikut')
+      accuration_k_np = np.array(list(scores_np.values()))
+      chart_data_np = pd.DataFrame(accuration_k_np, columns=['Score Akurasi'])
+      st.line_chart(chart_data_np)
+
+      # Save Model
+      model_np = KNeighborsClassifier(n_neighbors=best_k_np)
+      model_np.fit(x_train_np, y_train)# Nama File Penyimpanan
+      dirname = os.path.dirname(__file__)   # Mndapatkan Path directori
+      joblib.dump(model_np, f'{dirname}/../model/knn_model_np.sav')
+
+
+elif(selected== 'Implementation'):
+  loading()
+  number = st.number_input('Insert a number')
+  st.write('The current number is ', number)
