@@ -14,6 +14,8 @@ st.title("Dataset")
 st.write('Dataset yang di gunakan merupakan Historis data dari Bitcoin dari tanggal 1 Februari 2018 sampai dengan 30 Oktober 2022')
 
 # Load Dataset
-dataset = pd.read_csv("Dataset/BitcoinDataset.csv")
-st.write(dataset)
+
+df_test = pd.read_csv("data/test.csv")
+
+
 
