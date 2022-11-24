@@ -4,16 +4,16 @@ import numpy as np
 import joblib
 import os
 import time
-from sklearn.preprocessing import MinMaxScaler
 from streamlit_option_menu import option_menu
 from streamlit_extras.app_logo import add_logo
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-from sklearn.neighbors import KNeighborsClassifier
+
+from process import implementasi 
+from process import model
+from process import preprocessing
 
 def loading():
   with st.spinner('Tunggu Sebentar...'):
-    time.sleep(1.5)
+    time.sleep(0.3)
 
 add_logo("http://placekitten.com/150/150")
 st.markdown("# Pengolahan Data")
@@ -26,6 +26,8 @@ selected = option_menu(
 
 df_train = pd.read_csv("data/train.csv")
 y = df_train['price_range']
+dirname = os.path.dirname(__file__)   # Mndapatkan Path directori
+
 
 if(selected == "Dataset"):
   loading()
@@ -64,95 +66,56 @@ if(selected == "Dataset"):
              > 3 - Very High Cost
            """)
 
+########################################## Preprocessing #####################################################
 elif(selected == 'Preprocessing'):
   loading()
-  st.write('Data dilakukan Preprocessing menggunakan Min-Max Scaler')
-  scaled = MinMaxScaler()
-  df_train_pre = scaled.fit_transform(df_train.drop(columns=["price_range"]))
-  st.dataframe(df_train)
+  preprocessing.minMax()
   
+########################################### Modeling ##########################################################
 
 elif(selected == 'Modeling'):
-  # Preprocessing Min-Max Scaler
-  scaled = MinMaxScaler()
-  df_train_pre = scaled.fit_transform(df_train.drop(columns=["price_range"]))
-  x_train, x_test, y_train, y_test = train_test_split(df_train_pre, y, test_size = 0.2, random_state = 0)
   loading()
-  st.write('Modeling dengan menggunakan Dataset yang telah dilakukan preprocessing Min-Max Scaler')
   knn, dcc, nb = st.tabs(['K-Nerest Neighbor', 'Decission Tree', 'Naive Bayes'])
   with knn:
-    scores = {}
+    model.knn()
+  
+  with dcc:
+    model.dcc()
 
-    for i in range(1, 20+1):
-        KN = KNeighborsClassifier(n_neighbors = i)
-        KN.fit(x_train, y_train)
-        y_pred = KN.predict(x_test)
-        scores[i] = accuracy_score(y_test, y_pred)
-        
-    best_k = max(scores, key=scores.get)
-    st.caption("Splitting Data yang digunakan merupakan 80:20, 20\% untuk data test dan 80\% untuk data train\nIterasi K di lakukan sebanyak 20 Kali")
-    st.success(f"K Terbaik : {best_k} berada di Index : {best_k-1}, Akurasi Yang di Hasilkan : {max(scores.values())* 100}%")
-    st.write(df_train_pre)
-    
-    # Create Chart 
-    st.write('Dari proses pemodelan yang telah di lakukan menghasilkan grafik sebagai berikut')
-    accuration_k = np.array(list(scores.values()))
-    chart_data = pd.DataFrame(accuration_k, columns=['Score Akurasi'])
-    st.line_chart(chart_data)
-    
-    # Save Model
-    model = KNeighborsClassifier(n_neighbors=best_k)
-    model.fit(x_train, y_train)
-    dirname = os.path.dirname(__file__)   # Mndapatkan Path directori
-    joblib.dump(model, f'{dirname}/../model/knn_model_pre.sav') # Menyimpan Model ke dalam folder model
-    
-    # Tanpa Preprocessing Min-Max Scaler
-    st.write('Modeling Data dengan menggunakan Dataset yang tidak dilakukan preprocessing Min-Max Scaler')
-    x_train_np, x_test_np, y_train_np, y_test_np = train_test_split(df_train, y, test_size = 0.2, random_state = 0)
-    with knn:
-      scores_np = {}
-
-      for i in range(1, 20+1):
-          KN = KNeighborsClassifier(n_neighbors = i)
-          KN.fit(x_train_np, y_train_np)
-          y_pred_np = KN.predict(x_test_np)
-          scores_np[i] = accuracy_score(y_test_np, y_pred_np)
-
-      best_k_np = max(scores_np, key=scores_np.get)
-      st.success(f"K Terbaik : {best_k_np} berada di Index : {best_k_np-1}, Akurasi Yang di Hasilkan : {max(scores_np.values())* 100}%")
-      st.write(df_train)
-
-      # Create Chart 
-      st.write('Dari proses pemodelan yang telah di lakukan menghasilkan grafik sebagai berikut')
-      accuration_k_np = np.array(list(scores_np.values()))
-      chart_data_np = pd.DataFrame(accuration_k_np, columns=['Score Akurasi'])
-      st.line_chart(chart_data_np)
-
-      # Save Model
-      model_np = KNeighborsClassifier(n_neighbors=best_k_np)
-      model_np.fit(x_train_np, y_train)# Nama File Penyimpanan
-      dirname = os.path.dirname(__file__)   # Mndapatkan Path directori
-      joblib.dump(model_np, f'{dirname}/../model/knn_model_np.sav')
-
-
+####################################### Implementasi ###########################################################
 elif(selected== 'Implementation'):
-  loading()
   col1, col2 = st.columns(2)
   with col1:
-    battery = st.number_input('Battery Power')
-    bluetooth = st.number_input('Bluetoth')
-    sim_card = st.number_input('Dual SIM')
-    kamera_depan = st.number_input('Ukuran Kamera Depan(Mega Pikesel)')
-    jaringan_4G = st.number_input('Jaringan 4G')
-    int_memori= st.number_input('Internal Memori')
-    berat_hp= st.number_input('Berat Handphone')
-    kamera_belakang= st.number_input('Kemera Belakang (Mega Piksel)')
+    battery = st.number_input('Battery Power (mAh', min_value=0, value=1021)
+    bluetooth = st.selectbox('Bluetoth', ('Tidak','Ada'), index=1)
+    sim_card = st.selectbox('Dual SIM', ('Tidak','Bisa'), index=1)
+    kamera_depan = st.number_input('Ukuran Kamera Depan (Mega Pikesel)', min_value=0, value=0)
+    jaringan_4G = st.selectbox('Jaringan 4G', ('Tidak', 'Support'), index=1)
+    int_memori= st.number_input('Internal (GB)', min_value=0, value=53)
+    berat_hp= st.number_input('Berat Handphone (g)', min_value=0, value=136)
+    kamera_belakang= st.number_input('Kemera Belakang (Mega Piksel)', min_value=0, value=6)
+
   with col2:
-    tinggi_hp= st.number_input('Tinggi Handphone')
-    lebar_hp= st.number_input('Lebar Handphone')
-    ram= st.number_input('Ukuran RAM')
-    tinngi_layar= st.number_input('Tinggi Layar')
-    lebar_layar= st.number_input('Lebar Layar')
-    jaringan_3G= st.number_input('Jaringan 3G')
-    touchscreen= st.number_input('Touchscreen')
-    wifi= st.number_input('WIFI')
+    tinggi_hp= st.number_input('Tinggi Handphone (mm)', min_value=0, value=905)
+    lebar_hp= st.number_input('Lebar Handphone (mm)', min_value=0, value=1988)
+    ram= st.number_input('Ukuran RAM (GB)', min_value=0, value=2631)
+    tinggi_layar= st.number_input('Tinggi Layar (pixel)', min_value=0, value=17)
+    lebar_layar= st.number_input('Lebar Layar (pixel)', min_value=0, value=3)
+    jaringan_3G= st.selectbox('Jaringan 3G', ('Tidak', 'Support'), index=1)
+    touchscreen= st.selectbox('Touchscreen', ('Tidak','Iya'), index=1)
+    wifi= st.selectbox('WIFI', ('Tidak', 'Ada'), index=0)
+  ind_bluetooth = ('Tidak', 'Ada').index(bluetooth) 
+  ind_sim_card = ('Tidak', 'Bisa').index(sim_card) 
+  ind_jaringan_4G = ('Tidak', 'Support').index(jaringan_4G) 
+  ind_jaringan_3G = ('Tidak', 'Support').index(jaringan_3G) 
+  ind_touchscreen = ('Tidak', 'Iya').index(touchscreen) 
+  ind_wifi = ('Tidak', 'Ada').index(wifi)
+  data = np.array([[battery, ind_bluetooth, ind_sim_card, kamera_depan, ind_jaringan_4G, int_memori, berat_hp, kamera_belakang,
+               tinggi_hp, lebar_hp, ram, tinggi_layar, lebar_layar, ind_jaringan_3G, ind_touchscreen, ind_wifi]])
+  data_baru = data.reshape(1,-1)
+  scaler = joblib.load('model/df_scaled.sav')
+  data_baru = scaler.fit_transform(data_baru)
+  
+  knn, dcc, nb = st.tabs(['K-Nerest Neighbor', 'Decission Tree', 'Naive Bayes'])
+  with knn:
+    implementasi.knn(data_baru)
