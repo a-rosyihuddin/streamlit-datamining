@@ -5,21 +5,18 @@ import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier, export_graphviz
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
 
 
+df_train = pd.read_csv("data/train.csv")
+y = df_train['price_range']
 
 def knn():
-  df_train = pd.read_csv("data/train.csv")
-  y = df_train['price_range']
-  
   # Preprocessing Min-Max Scaler
   df_train_pre = joblib.load('model/df_train_pre.sav')
   x_train, x_test, y_train, y_test = train_test_split(df_train_pre, y, test_size = 0.3, random_state = 0)
-  st.write('Modeling dengan menggunakan Dataset yang telah dilakukan preprocessing Min-Max Scaler')
-  
   scores = {}
-  
   for i in range(1, 20+1):
       KN = KNeighborsClassifier(n_neighbors = i)
       KN.fit(x_train, y_train)
@@ -44,9 +41,6 @@ def knn():
 
 
 def dcc():
-  df_train = pd.read_csv("data/train.csv")
-  y = df_train['price_range']
-  
   # Preprocessing Min-Max Scaler
   df_train_pre = joblib.load('model/df_train_pre.sav')
   x_train, x_test, y_train, y_test = train_test_split(df_train_pre, y, test_size = 0.3, random_state = 0)
@@ -58,4 +52,24 @@ def dcc():
   
   y_pred = dcc.predict(x_test)
   akurasi = accuracy_score(y_test,y_pred)
+  
+  st.caption("Splitting Data yang digunakan merupakan 70:30, 30\% untuk data test dan 70\% untuk data train\nIterasi K di lakukan sebanyak 20 Kali")
   st.success(f'Akurasi Yang di dapatkan adalah : {akurasi*100}%')
+  st.write(df_train_pre)
+
+def nb():
+  # Preprocessing Min-Max Scaler
+  df_train_pre = joblib.load('model/df_train_pre.sav')
+  x_train, x_test, y_train, y_test = train_test_split(df_train_pre, y, test_size = 0.3, random_state = 0)
+  
+  nb = GaussianNB()
+  nb.fit(x_train, y_train)
+  # Save Model
+  joblib.dump(nb, 'model/nb_model.sav') # Menyimpan Model ke dalam folder model
+  
+  y_pred = nb.predict(x_test)
+  akurasi = accuracy_score(y_test,y_pred)
+  
+  st.caption("Splitting Data yang digunakan merupakan 70:30, 30\% untuk data test dan 70\% untuk data train\nIterasi K di lakukan sebanyak 20 Kali")
+  st.success(f'Akurasi Yang di dapatkan adalah : {akurasi*100}%')
+  st.write(df_train_pre)

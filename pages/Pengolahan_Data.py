@@ -24,9 +24,8 @@ selected = option_menu(
     orientation = "horizontal",
 )
 
-df_train = pd.read_csv("data/train.csv")
-y = df_train['price_range']
-dirname = os.path.dirname(__file__)   # Mndapatkan Path directori
+df_train = pd.read_csv("data/BitcoinDataset.csv")
+y = df_train['Label']
 
 
 if(selected == "Dataset"):
@@ -81,6 +80,9 @@ elif(selected == 'Modeling'):
   
   with dcc:
     model.dcc()
+  
+  with nb:
+    model.nb()
 
 ####################################### Implementasi ###########################################################
 elif(selected== 'Implementation'):
@@ -112,10 +114,16 @@ elif(selected== 'Implementation'):
   ind_wifi = ('Tidak', 'Ada').index(wifi)
   data = np.array([[battery, ind_bluetooth, ind_sim_card, kamera_depan, ind_jaringan_4G, int_memori, berat_hp, kamera_belakang,
                tinggi_hp, lebar_hp, ram, tinggi_layar, lebar_layar, ind_jaringan_3G, ind_touchscreen, ind_wifi]])
-  data_baru = data.reshape(1,-1)
+  
   scaler = joblib.load('model/df_scaled.sav')
-  data_baru = scaler.fit_transform(data_baru)
+  data_scaler = scaler.fit_transform(data)
   
   knn, dcc, nb = st.tabs(['K-Nerest Neighbor', 'Decission Tree', 'Naive Bayes'])
   with knn:
-    implementasi.knn(data_baru)
+    implementasi.knn(data, data_scaler)
+    
+  with dcc:
+    implementasi.dcc(data, data_scaler)
+  
+  with nb:
+    implementasi.nb(data, data_scaler)

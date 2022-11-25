@@ -7,7 +7,7 @@ df_train = pd.read_csv("data/train.csv")
 y = df_train['price_range']
 
 def minMax():
-  st.write('Data Awal Sebelum di lakan Preprocessing')
+  st.write('Data Awal Sebelum di lakukan Preprocessing')
   st.dataframe(df_train)
   
   st.write('Data setelah dilakukan Preprocessing menggunakan Min-Max Scaler')
