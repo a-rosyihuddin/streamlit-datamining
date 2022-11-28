@@ -100,7 +100,7 @@ elif(selected== 'Implementation'):
   with col2:
     tinggi_hp= st.number_input('Tinggi Handphone (mm)', min_value=0, value=905)
     lebar_hp= st.number_input('Lebar Handphone (mm)', min_value=0, value=1988)
-    ram= st.number_input('Ukuran RAM (GB)', min_value=0, value=2631)
+    ram= st.number_input('Ukuran RAM (MB)', min_value=0, value=2631)
     tinggi_layar= st.number_input('Tinggi Layar (pixel)', min_value=0, value=17)
     lebar_layar= st.number_input('Lebar Layar (pixel)', min_value=0, value=3)
     jaringan_3G= st.selectbox('Jaringan 3G', ('Tidak', 'Support'), index=1)
