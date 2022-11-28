@@ -24,8 +24,8 @@ selected = option_menu(
     orientation = "horizontal",
 )
 
-df_train = pd.read_csv("data/BitcoinDataset.csv")
-y = df_train['Label']
+df_train = pd.read_csv("data/train.csv")
+y = df_train['price_range']
 
 
 if(selected == "Dataset"):
