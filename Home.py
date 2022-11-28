@@ -15,8 +15,13 @@ st.write("""
          Github : [Github Repositori](https://github.com/a-rosyihuddin/streamlit-datamining)
          """)
 
-st.markdown("# Apa Itu Data Mining")
-st.caption("Data mining adalah proses pengumpulan dan pengolahan data yang bertujuan untuk mengekstrak informasi penting pada data. Proses pengumpulan dan ekstraksi informasi tersebut dapat dilakukan menggunakan perangkat lunak dengan bantuan perhitungan statistika, matematika, ataupun teknologi Artificial Intelligence (AI). Data mining sering disebut juga Knowledge Discovery in Database (KDD).")
+st.markdown("# Klasisfikasi Range Harga Berdasarkan Spesifikasi Handphone")
+st.caption("Data yang di gunakan untuk klasifikasi range harga memiliki 17 fitur, dan dari 17 fitur ini sudah termasuk dengan label,
+yang value nya berupa index dari 0-3 dengan penjelasan sebagai berikut:
+ > 0 - Low Cost
+ > 1 - Medium Cost
+ > 2 - High Cost
+ > 3 - Very High Cost")
 
 
 # Load Dataset
