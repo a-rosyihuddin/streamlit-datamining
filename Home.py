@@ -16,7 +16,8 @@ st.write("""
          """)
 
 st.markdown("# Klasisfikasi Range Harga Berdasarkan Spesifikasi Handphone")
-st.text(""" Data yang di gunakan untuk klasifikasi range harga memiliki 17 fitur, dan dari 17 fitur ini sudah termasuk dengan label, 
+st.text(""" Data yang di gunakan untuk klasifikasi range harga memiliki 17 fitur, 
+        dan dari 17 fitur ini sudah termasuk dengan label, 
         yang value nya berupa index dari 0-3 dengan penjelasan sebagai berikut:
         > 0 - Low Cost
         > 1 - Medium Cost
