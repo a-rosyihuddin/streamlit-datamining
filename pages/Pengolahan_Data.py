@@ -112,18 +112,22 @@ elif(selected== 'Implementation'):
   ind_jaringan_3G = ('Tidak', 'Support').index(jaringan_3G) 
   ind_touchscreen = ('Tidak', 'Iya').index(touchscreen) 
   ind_wifi = ('Tidak', 'Ada').index(wifi)
-  data = np.array([[battery, ind_bluetooth, ind_sim_card, kamera_depan, ind_jaringan_4G, int_memori, berat_hp, kamera_belakang,
+  data_ori = np.array([[battery, ind_bluetooth, ind_sim_card, kamera_depan, ind_jaringan_4G, int_memori, berat_hp, kamera_belakang,
                tinggi_hp, lebar_hp, ram, tinggi_layar, lebar_layar, ind_jaringan_3G, ind_touchscreen, ind_wifi]])
+  data = np.array([[battery, kamera_depan, int_memori, berat_hp, kamera_belakang, tinggi_hp, lebar_hp, ram, tinggi_layar, lebar_layar]])
+  biner_data = np.array([[ind_bluetooth, ind_sim_card, ind_jaringan_4G, ind_jaringan_3G, ind_touchscreen, ind_wifi]])
   
   scaler = joblib.load('model/df_scaled.sav')
-  data_scaler = scaler.fit_transform(data)
+  data_baru = scaler.fit_transform(data)
+  data_scaler = np.column_stack([data_baru, biner_data])
+  st.write(data_scaler)
   
   knn, dcc, nb = st.tabs(['K-Nerest Neighbor', 'Decission Tree', 'Naive Bayes'])
   with knn:
-    implementasi.knn(data, data_scaler)
+    implementasi.knn(data_ori, data_scaler)
     
   with dcc:
-    implementasi.dcc(data, data_scaler)
+    implementasi.dcc(data_ori, data_scaler)
   
   with nb:
-    implementasi.nb(data, data_scaler)
+    implementasi.nb(data_ori, data_scaler)
